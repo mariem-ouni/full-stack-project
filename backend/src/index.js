@@ -4,6 +4,8 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 
+import path from "path";
+
 // const authRoutes = require('./routes/auth.route.js');
 // const messageRoutes = require('./routes/message.route.js');
 import authRoutes from "./routes/auth.route.js"
@@ -28,9 +30,19 @@ connection()
 
 
 const port = process.env.PORT || 5001; // Ajout d'une valeur par défaut
-
+const __dirname = path.resolve();
 app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
+
+if(process.env.NODE_ENV === "production") {
+   app.use(express.static(path.join(__dirname, "/frontend/dist"))); 
+    app.get("*", (req, res)=>{
+      res.usedFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+
+    })
+    
+}
+    
 
 server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
